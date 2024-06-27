@@ -13,6 +13,8 @@ import java.util.function.Consumer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.springframework.mock.web.server.MockServerWebExchange.from;
+import static org.springframework.web.reactive.function.server.HandlerStrategies.withDefaults;
 
 @DisplayName("ErrorHandler Unit Tests")
 class ErrorHandlerTest {
@@ -23,9 +25,8 @@ class ErrorHandlerTest {
     void notFoundTest() {
 
         ServerRequest serverRequest =
-            ServerRequest.create(MockServerWebExchange
-                .from(MockServerHttpRequest.post("p").build()),
-                HandlerStrategies.withDefaults().messageReaders());
+            ServerRequest.create(from(MockServerHttpRequest.post("p").build()),
+                withDefaults().messageReaders());
 
         errorHandler.notFound(serverRequest)
             .subscribe(checkResponse());
