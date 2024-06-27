@@ -40,31 +40,37 @@ public class CompanyService {
         return query.transform(companyRepo::findByCompanyNumber)
             .map(this::getCompanyDto)
             .switchIfEmpty(findCompanyInRemoteRepoAndAddOfficers(query))
-            .flatMap(c -> companyRepo.save(c.getCompanies().getFirst()))
-            .map(this::getCompanyDto);
-    }
-
-    private Mono<CompanyDto> findCompanyInRemoteRepoAndAddOfficers(Mono<String> query) {
-
-        return companyRepoRemote.findCompanies(query).transform(this::toCompanyWithOfficers);
+            .map(c -> c.getCompanies().stream().findFirst().orElse(Company.builder().build()))
+            .flatMap(companyRepo::save)
+            .flatMap(f -> just(this.getCompanyDto(f)));
     }
 
     private Mono<CompanyDto> getCompanyByName(final Mono<String> query) {
 
         return query
             .transform(t -> companyRepoRemote.findCompanies(query)
-            .transform(this::toCompanyWithOfficers));
+                .transform(this::toCompanyWithOfficers));
+    }
+
+    private Mono<CompanyDto> findCompanyInRemoteRepoAndAddOfficers(final Mono<String> query) {
+
+        return companyRepoRemote.findCompanies(query)
+            .transform(this::toCompanyWithOfficers);
     }
 
     private Mono<CompanyDto> toCompanyWithOfficers(final Mono<CompanyDto> companyDto) {
 
         return companyDto.flatMap(q ->
-                companyDto.zipWith(companyRepoRemote.findOfficers(
-                    just(q.getCompanies().getFirst().getCompanyNumber()))
-                        .transform(this::filterOfficersWhoHaveResigned))
-                    .map(getSingleCompanyWithOfficersEmbedded())
-            );
+            companyDto.zipWith(companyRepoRemote.findOfficers(getFirstCompanyOrElseEmpty(q.getCompanies()))
+                    .transform(this::filterOfficersWhoHaveResigned))
+                .map(getCompanyWithOfficers())
+        );
+    }
 
+    private Mono<String> getFirstCompanyOrElseEmpty(final List<Company> companies) {
+
+        return justOrEmpty(companies)
+            .map(m -> m.getFirst().getCompanyNumber());
     }
 
     private Mono<List<Officer>> filterOfficersWhoHaveResigned(final Mono<List<Officer>> officerListMono) {
@@ -82,13 +88,13 @@ public class CompanyService {
             .build();
     }
 
-    private static Function<Tuple2<CompanyDto, List<Officer>>, CompanyDto> getSingleCompanyWithOfficersEmbedded() {
+    private static Function<Tuple2<CompanyDto, List<Officer>>, CompanyDto> getCompanyWithOfficers() {
 
         return z -> {
-            z.getT1().getCompanies().getFirst().setOfficers(z.getT2());
+            z.getT1().getCompanies().forEach(c -> c.setOfficers(z.getT2()));
             return CompanyDto.builder()
                 .totalResults(1)
-                .companies(z.getT1().getCompanies()).companies(z.getT1().getCompanies()).build();
+                .companies(z.getT1().getCompanies()).build();
         };
     }
 }

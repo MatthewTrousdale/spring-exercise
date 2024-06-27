@@ -17,7 +17,12 @@
   {
     "httpRequest": {
       "method": "GET",
-      "path": "/Search"
+      "path": "/Search",
+      "queryStringParameters": [
+        {
+          "name": "Query",
+          "values": ["BAD-NUMBER"]
+        }]
     },
     "httpResponse": {
       "headers": {
@@ -25,8 +30,23 @@
           "application/json"
         ]
       },
-      "body": "{\n    \"page_number\": 1,\n    \"kind\": \"search#companies\",\n    \"total_results\": 1,\n    \"items\": [\n        {\n            \"company_status\": \"active\",\n            \"address_snippet\": \"Boswell Cottage Main Street, North Leverton, Retford, England, DN22 0AD\",\n            \"date_of_creation\": \"2008-02-11\",\n            \"description\": \"06500244 - Incorporated on 11 February 2008\",\n            \"links\": {\n                \"self\": \"/company/06500244\"\n            },\n            \"company_number\": \"06500244\",\n            \"title\": \"BBC LIMITED\",\n            \"company_type\": \"ltd\",\n            \"address\": {\n                \"premises\": \"Boswell Cottage Main Street\",\n                \"postal_code\": \"DN22 0AD\",\n                \"country\": \"England\",\n                \"locality\": \"Retford\",\n                \"address_line_1\": \"North Leverton\"\n            },\n            \"kind\": \"searchresults#company\",\n            \"description_identifier\": [\n                \"incorporated-on\"\n            ]\n        }\n    ]\n}",
+      "body": "{}",
       "statusCode": 200
     }
+  },
+  {
+  "httpRequest": {
+    "method": "GET",
+    "path": "/Search"
+  },
+  "httpResponse": {
+    "headers": {
+      "Content-Type": [
+        "application/json"
+      ]
+    },
+    "body": "{\n    \"page_number\": 1,\n    \"kind\": \"search#companies\",\n    \"total_results\": 1,\n    \"items\": [\n        {\n            \"company_status\": \"active\",\n            \"address_snippet\": \"Boswell Cottage Main Street, North Leverton, Retford, England, DN22 0AD\",\n            \"date_of_creation\": \"2008-02-11\",\n            \"description\": \"06500244 - Incorporated on 11 February 2008\",\n            \"links\": {\n                \"self\": \"/company/06500244\"\n            },\n            \"company_number\": \"06500244\",\n            \"title\": \"BBC LIMITED\",\n            \"company_type\": \"ltd\",\n            \"address\": {\n                \"premises\": \"Boswell Cottage Main Street\",\n                \"postal_code\": \"DN22 0AD\",\n                \"country\": \"England\",\n                \"locality\": \"Retford\",\n                \"address_line_1\": \"North Leverton\"\n            },\n            \"kind\": \"searchresults#company\",\n            \"description_identifier\": [\n                \"incorporated-on\"\n            ]\n        }\n    ]\n}",
+    "statusCode": 200
   }
+}
 ]

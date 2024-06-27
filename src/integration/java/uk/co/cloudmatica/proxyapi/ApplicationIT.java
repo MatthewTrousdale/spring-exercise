@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
-import reactor.core.publisher.Mono;
 import uk.co.cloudmatica.proxyapi.dto.CompanyDto;
 import uk.co.cloudmatica.proxyapi.handler.QueryFields;
 
@@ -72,6 +71,20 @@ public class ApplicationIT extends IntegrationTestBase {
                 assertThat(response.getCompanies().getFirst().getOfficers()).isNotNull();
                 assertThat(response.getCompanies().getFirst().getOfficers().size()).isEqualTo(2);
             });
+    }
+
+    @Test
+    void whenIAskForAnExistingCompanyWithNonExistingCompany404() {
+
+        webTestClient.post()
+            .uri("/proxy")
+            .accept(MediaType.APPLICATION_JSON)
+            .body(BodyInserters.fromPublisher(just(QueryFields
+                .builder()
+                .companyName("BAD-NUMBER")
+                .build()), QueryFields.class))
+            .exchange()
+            .expectStatus().isNotFound();
     }
 
     @Test

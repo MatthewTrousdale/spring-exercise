@@ -7,10 +7,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.test.StepVerifier;
+import uk.co.cloudmatica.proxyapi.dto.CompanyDto;
 import uk.co.cloudmatica.proxyapi.handler.QueryFields;
 import uk.co.cloudmatica.proxyapi.repo.CompanyRepo;
 import uk.co.cloudmatica.proxyapi.repo.CompanyRepoRemote;
 
+import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -18,7 +20,7 @@ import static reactor.core.publisher.Mono.empty;
 import static reactor.core.publisher.Mono.just;
 import static uk.co.cloudmatica.proxyapi.Fixtures.*;
 
-@DisplayName("ComapnyService Unit Tests")
+@DisplayName("CompnyService Unit Tests")
 @ExtendWith(MockitoExtension.class)
 class CompanyServiceTest {
 
@@ -79,6 +81,45 @@ class CompanyServiceTest {
         given(companyRepoMock.findByCompanyNumber(any())).willReturn(empty());
         given(companyRepoRemoteMock.findCompanies(any())).willReturn(just(getCompanyDtoFixture("Mole")));
         given(companyRepoRemoteMock.findOfficers(any())).willReturn(just(getOfficersFixture("Badger")));
+        given(companyRepoMock.save(any())).willReturn(empty());
+
+        StepVerifier.create(underTest.getCompanyByNumberOrName(just(QueryFields.builder().companyName("Cloudmatica").build())))
+            .assertNext(actual -> {
+                assertThat(actual).isNotNull();
+                assertThat(actual.getCompanies()).isNotNull();
+                assertThat(actual.getCompanies().size()).isEqualTo(1);
+                assertThat(actual.getCompanies().getFirst().getOfficers()).isNotNull();
+                final var actualOfficer = actual.getCompanies().getFirst().getOfficers();
+                assertThat(actualOfficer).isNotNull();
+                assertThat(actualOfficer).usingRecursiveComparison().isEqualTo(expectedOfficersList);
+            }).verifyComplete();
+    }
+
+    @Test
+    void givenTheRemoteReturnsNoCompaniesThen(){
+
+        given(companyRepoMock.findByCompanyNumber(any())).willReturn(empty());
+        given(companyRepoRemoteMock.findCompanies(any())).willReturn(just(CompanyDto.builder().companies(of())
+            .build()));
+        given(companyRepoRemoteMock.findOfficers(any())).willReturn(just(getOfficersFixture("Badger")));
+        given(companyRepoMock.save(any())).willReturn(empty());
+
+        StepVerifier.create(underTest.getCompanyByNumberOrName(just(QueryFields.builder().companyNumber("123")
+                .build())))
+            .assertNext(actual -> {
+                assertThat(actual).isNotNull();
+                assertThat(actual.getCompanies()).isEmpty();
+            }).verifyComplete();
+    }
+
+    @Test
+    void givenCompanyNameAndResignedOfficersThenReturnResultsWithout(){
+
+        final var expectedOfficersList = getOfficersFixture("Badger");
+
+        given(companyRepoMock.findByCompanyNumber(any())).willReturn(empty());
+        given(companyRepoRemoteMock.findCompanies(any())).willReturn(just(getCompanyDtoFixture("Mole")));
+        given(companyRepoRemoteMock.findOfficers(any())).willReturn(just(getOfficersWithResignedFixture("Badger")));
         given(companyRepoMock.save(any())).willReturn(empty());
 
         StepVerifier.create(underTest.getCompanyByNumberOrName(just(QueryFields.builder().companyName("Cloudmatica").build())))

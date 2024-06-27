@@ -4,7 +4,8 @@ import org.springframework.http.HttpStatus;
 import reactor.core.publisher.Mono;
 import uk.co.cloudmatica.proxyapi.handler.exceptions.CompanyNotFoundException;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 class ThrowableTranslator {
 

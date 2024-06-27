@@ -36,4 +36,17 @@ public class Fixtures {
             .name(name)
             .build());
     }
+
+    public static List<Officer> getOfficersWithResignedFixture(String name) {
+
+        return of(Officer
+            .builder()
+            .name(name)
+            .resigned_on("2020-01-01")
+            .build(),
+            Officer
+                .builder()
+                .name(name)
+                .build());
+    }
 }

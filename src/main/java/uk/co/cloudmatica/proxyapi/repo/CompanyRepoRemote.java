@@ -8,7 +8,6 @@ import uk.co.cloudmatica.proxyapi.dto.CompanyDto;
 import uk.co.cloudmatica.proxyapi.repo.model.OfficeWrapper;
 import uk.co.cloudmatica.proxyapi.repo.model.Officer;
 
-import java.lang.reflect.Type;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
