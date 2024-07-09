@@ -1,6 +1,5 @@
 package uk.co.cloudmatica.proxyapi.repo;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -12,7 +11,6 @@ import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-@Slf4j
 public class CompanyRepoRemote {
 
     private static final String COMPANY_RESOURCE = "/Search?";
